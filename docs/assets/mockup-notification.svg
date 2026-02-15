@@ -1,0 +1,13 @@
+<svg width="1200" height="780" viewBox="0 0 1200 780" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="780" rx="28" fill="#ECF4FF"/>
+  <rect x="48" y="48" width="1104" height="684" rx="24" fill="#F8FBFF" stroke="#CAD9EF"/>
+
+  <rect x="142" y="236" width="916" height="316" rx="28" fill="#FFFFFF" stroke="#CBD8EB"/>
+  <rect x="182" y="286" width="56" height="56" rx="16" fill="#34CF29"/>
+  <text x="260" y="328" font-family="Segoe UI, Noto Sans, sans-serif" font-size="58" fill="#0F1F39" font-weight="700">Upstand</text>
+  <text x="982" y="328" font-family="Segoe UI, Noto Sans, sans-serif" font-size="56" fill="#6984A6">x</text>
+
+  <text x="182" y="418" font-family="Segoe UI, Noto Sans, sans-serif" font-size="34" fill="#1A314E">Nooo, you can't sit forever. It's like... so bad!</text>
+
+  <rect x="176" y="580" width="848" height="32" rx="16" fill="#D7E2F2"/>
+</svg>

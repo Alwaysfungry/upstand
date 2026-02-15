@@ -1,0 +1,55 @@
+<svg width="1200" height="780" viewBox="0 0 1200 780" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="780" rx="28" fill="#EAF2FF"/>
+  <rect x="26" y="26" width="1148" height="728" rx="22" fill="#F6FAFF" stroke="#C9D8ED"/>
+
+  <rect x="52" y="52" width="248" height="676" rx="16" fill="#E4EEFA" stroke="#C9D8ED"/>
+  <text x="76" y="104" font-family="Segoe UI, Noto Sans, sans-serif" font-size="52" fill="#11233F" font-weight="700">UPSTAND</text>
+
+  <rect x="74" y="128" width="204" height="54" rx="14" fill="#D8F5E8" stroke="#8BDDC5"/>
+  <text x="98" y="163" font-family="Segoe UI, Noto Sans, sans-serif" font-size="30" fill="#155E52">Activity Insights</text>
+
+  <text x="328" y="128" font-family="Segoe UI, Noto Sans, sans-serif" font-size="70" fill="#0F1F39" font-weight="700">Dashboard</text>
+  <text x="328" y="176" font-family="Segoe UI, Noto Sans, sans-serif" font-size="34" fill="#5A7394">Your 24-hour sit/stand visualization center.</text>
+
+  <rect x="328" y="198" width="816" height="516" rx="24" fill="#FFFFFF" stroke="#CCD7E7"/>
+  <circle cx="430" cy="304" r="82" fill="url(#spine)"/>
+  <text x="548" y="304" font-family="Segoe UI, Noto Sans, sans-serif" font-size="62" fill="#11233F" font-weight="700">Spine pressure: Light</text>
+  <text x="548" y="352" font-family="Segoe UI, Noto Sans, sans-serif" font-size="34" fill="#537191">Execution quality is strong today.</text>
+
+  <text x="360" y="430" font-family="Segoe UI, Noto Sans, sans-serif" font-size="56" fill="#0F1F39" font-weight="700">24H Guardian Heatmap</text>
+
+  <g transform="translate(360 456)">
+    <rect x="0" y="0" width="32" height="56" rx="16" fill="#D9DFEA"/>
+    <rect x="42" y="0" width="32" height="56" rx="16" fill="#D9DFEA"/>
+    <rect x="84" y="0" width="32" height="56" rx="16" fill="#D9DFEA"/>
+    <rect x="126" y="0" width="32" height="56" rx="16" fill="#D9DFEA"/>
+    <rect x="168" y="0" width="32" height="56" rx="16" fill="#D9DFEA"/>
+    <rect x="210" y="0" width="32" height="56" rx="16" fill="#D9DFEA"/>
+    <rect x="252" y="0" width="32" height="56" rx="16" fill="#F87171"/>
+    <rect x="294" y="0" width="32" height="56" rx="16" fill="#4ADE80"/>
+    <rect x="336" y="0" width="32" height="56" rx="16" fill="#D9DFEA"/>
+    <rect x="378" y="0" width="32" height="56" rx="16" fill="#D9DFEA"/>
+    <rect x="420" y="0" width="32" height="56" rx="16" fill="#D9DFEA"/>
+    <rect x="462" y="0" width="32" height="56" rx="16" fill="#D9DFEA"/>
+    <rect x="504" y="0" width="32" height="56" rx="16" fill="#D9DFEA"/>
+    <rect x="546" y="0" width="32" height="56" rx="16" fill="#D9DFEA"/>
+    <rect x="588" y="0" width="32" height="56" rx="16" fill="#D9DFEA"/>
+    <rect x="630" y="0" width="32" height="56" rx="16" fill="#D9DFEA"/>
+    <rect x="672" y="0" width="32" height="56" rx="16" fill="#D9DFEA"/>
+    <rect x="714" y="0" width="32" height="56" rx="16" fill="#D9DFEA"/>
+    <rect x="756" y="0" width="32" height="56" rx="16" fill="#D9DFEA"/>
+  </g>
+
+  <rect x="360" y="550" width="188" height="58" rx="29" fill="#F3F7FF" stroke="#C9D8ED"/>
+  <text x="389" y="588" font-family="Segoe UI, Noto Sans, sans-serif" font-size="31" fill="#4D6788">Standups: 5</text>
+
+  <rect x="566" y="550" width="268" height="58" rx="29" fill="#F3F7FF" stroke="#C9D8ED"/>
+  <text x="598" y="588" font-family="Segoe UI, Noto Sans, sans-serif" font-size="31" fill="#4D6788">Total sitting: 6 min</text>
+
+  <defs>
+    <radialGradient id="spine" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(402 274) rotate(46) scale(148)">
+      <stop stop-color="#B9F0DF"/>
+      <stop offset="1" stop-color="#38C6A3"/>
+    </radialGradient>
+  </defs>
+</svg>

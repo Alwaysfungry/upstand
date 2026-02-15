@@ -1,0 +1,32 @@
+<svg width="1200" height="780" viewBox="0 0 1200 780" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="780" rx="28" fill="#EBF3FF"/>
+  <rect x="40" y="44" width="1120" height="692" rx="24" fill="#F8FBFF" stroke="#CAD9EF"/>
+  <text x="120" y="140" font-family="Segoe UI, Noto Sans, sans-serif" font-size="58" fill="#122742" font-weight="700">Reminder Interval</text>
+  <text x="120" y="186" font-family="Segoe UI, Noto Sans, sans-serif" font-size="30" fill="#5C7493">Select your cadence and confirm to apply immediately.</text>
+
+  <rect x="120" y="250" width="180" height="86" rx="16" fill="#F3F7FF" stroke="#C6D7EE"/>
+  <text x="173" y="304" font-family="Segoe UI, Noto Sans, sans-serif" font-size="38" fill="#294A6E" font-weight="700">5 MIN</text>
+
+  <rect x="320" y="250" width="180" height="86" rx="16" fill="#F3F7FF" stroke="#C6D7EE"/>
+  <text x="362" y="304" font-family="Segoe UI, Noto Sans, sans-serif" font-size="38" fill="#294A6E" font-weight="700">10 MIN</text>
+
+  <rect x="520" y="250" width="180" height="86" rx="16" fill="#F3F7FF" stroke="#C6D7EE"/>
+  <text x="558" y="304" font-family="Segoe UI, Noto Sans, sans-serif" font-size="38" fill="#294A6E" font-weight="700">20 MIN</text>
+
+  <rect x="720" y="250" width="180" height="86" rx="16" fill="#D8F6E7" stroke="#88DDC4"/>
+  <text x="758" y="304" font-family="Segoe UI, Noto Sans, sans-serif" font-size="38" fill="#166D54" font-weight="700">30 MIN</text>
+
+  <rect x="920" y="250" width="180" height="86" rx="16" fill="#F3F7FF" stroke="#C6D7EE"/>
+  <text x="958" y="304" font-family="Segoe UI, Noto Sans, sans-serif" font-size="38" fill="#294A6E" font-weight="700">50 MIN</text>
+
+  <rect x="120" y="392" width="210" height="72" rx="14" fill="#FFFFFF" stroke="#C6D7EE"/>
+  <text x="182" y="438" font-family="Segoe UI, Noto Sans, sans-serif" font-size="34" fill="#4B6789" font-weight="700">Cancel</text>
+
+  <rect x="350" y="392" width="250" height="72" rx="14" fill="#46D676"/>
+  <text x="420" y="438" font-family="Segoe UI, Noto Sans, sans-serif" font-size="34" fill="#0D3016" font-weight="700">Confirm</text>
+
+  <rect x="120" y="510" width="980" height="170" rx="18" fill="#FFFFFF" stroke="#C6D7EE"/>
+  <text x="154" y="572" font-family="Segoe UI, Noto Sans, sans-serif" font-size="36" fill="#1A334F" font-weight="700">Behavior Rule</text>
+  <text x="154" y="620" font-family="Segoe UI, Noto Sans, sans-serif" font-size="30" fill="#556F8F">- Click reminder within 60 seconds: standup session</text>
+  <text x="154" y="660" font-family="Segoe UI, Noto Sans, sans-serif" font-size="30" fill="#556F8F">- No click within 60 seconds: sedentary session</text>
+</svg>
