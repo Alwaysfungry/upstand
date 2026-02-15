@@ -1,0 +1,31 @@
+[package]
+name = "upstand"
+version = "1.2.0"
+edition = "2021"
+
+[dependencies]
+tauri = { version = "2.1", features = ["tray-icon", "image-png"] }
+tauri-plugin-shell = "2.0"
+tauri-plugin-autostart = "2.0"
+tokio = { version = "1", features = ["full"] }
+chrono = "0.4"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+base64 = "0.22"
+sys-locale = "0.3"
+rand = "0.8"
+windows-sys = { version = "0.52", features = ["Win32_UI_Input_KeyboardAndMouse", "Win32_System_SystemInformation", "Win32_Foundation", "Win32_Globalization"] }
+
+# Image generation for heatmap export
+# image dependency removed — no analytics/heatmap exports in minimal build
+
+[target.'cfg(windows)'.dependencies]
+windows-sys = { version = "0.52", features = [
+    "Win32_Foundation",
+    "Win32_UI_Input_KeyboardAndMouse", 
+    "Win32_System_SystemInformation",
+    "Win32_Globalization"
+] }
+
+[build-dependencies]
+tauri-build = "2.0"

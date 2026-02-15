@@ -1,0 +1,59 @@
+{
+  "productName": "Upstand",
+  "version": "1.2.0",
+  "identifier": "com.colinwhispers.upstand",
+  "build": {
+    "frontendDist": "./dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "title": "Upstand Startup",
+        "width": 300,
+        "height": 160,
+        "decorations": false,
+        "transparent": false,
+        "backgroundColor": "#0f172a",
+        "center": true,
+        "alwaysOnTop": true,
+        "skipTaskbar": true,
+        "url": "index.html"
+      },
+      {
+        "label": "settings",
+        "title": "Upstand Dashboard",
+        "width": 980,
+        "height": 700,
+        "decorations": false,
+        "transparent": false,
+        "visible": false,
+        "center": true,
+        "url": "settings.html"
+      },
+      {
+        "label": "reminder",
+        "title": "Upstand Reminder",
+        "width": 640,
+        "height": 196,
+        "decorations": false,
+        "transparent": false,
+        "backgroundColor": "#ffffff",
+        "visible": false,
+        "alwaysOnTop": true,
+        "skipTaskbar": true,
+        "url": "reminder_v2.html"
+      }
+    ],
+    "security": { "csp": null }
+  },
+  "bundle": {
+    "active": true,
+    "icon": [
+      "icons/icon-32.png",
+      "icons/icon-128.png",
+      "icons/icon-256.png",
+      "icons/icon.ico"
+    ]
+  }
+}

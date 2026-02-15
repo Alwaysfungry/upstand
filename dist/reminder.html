@@ -1,0 +1,198 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <style>
+    @font-face {
+      font-family: "Open Sans";
+      src: local("Open Sans"), local("OpenSans-Regular");
+      font-weight: 400;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --line: rgba(15, 23, 42, 0.12);
+      --shadow: 0 14px 30px rgba(15, 23, 42, 0.18);
+      --hover: rgba(15, 23, 42, 0.06);
+    }
+    html[data-theme="night"] {
+      --card: #0d1727;
+      --text: #eaf1fb;
+      --muted: #9fb0c8;
+      --line: rgba(234, 241, 251, 0.14);
+      --shadow: 0 18px 34px rgba(0, 0, 0, 0.45);
+      --hover: rgba(234, 241, 251, 0.08);
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: var(--card);
+      font-family: "Open Sans", "Segoe UI", -apple-system, sans-serif;
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+    }
+
+    .bubble {
+      width: 100%;
+      height: 100%;
+      border-radius: 12px;
+      background: var(--card);
+      color: var(--text);
+      box-shadow: var(--shadow), 0 0 0 1px var(--line);
+      cursor: pointer;
+      padding: 12px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      overflow: hidden;
+      border: 0;
+    }
+
+    .headline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 24px;
+      color: var(--text);
+      font-size: 18px;
+      font-weight: 400;
+      line-height: 1;
+    }
+
+    .headline-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .logo {
+      width: 18px;
+      height: 18px;
+      flex: 0 0 18px;
+      border-radius: 4px;
+      object-fit: cover;
+    }
+
+    .close {
+      width: 24px;
+      height: 24px;
+      border: 0;
+      border-radius: 6px;
+      background: transparent;
+      color: var(--muted);
+      font-size: 20px;
+      line-height: 1;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding-bottom: 2px;
+    }
+    .close:hover { background: var(--hover); }
+
+    .line {
+      font-size: 15px;
+      font-weight: 400;
+      line-height: 1.4;
+      color: var(--text);
+      white-space: normal;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+  <div class="bubble" id="bubble">
+    <div class="headline">
+      <div class="headline-left">
+        <img class="logo" src="reminder-icon.png?v=20260215" alt="Upstand icon" />
+        <span>Upstand</span>
+      </div>
+      <button class="close" id="closeBtn" aria-label="Dismiss">×</button>
+    </div>
+    <div class="line" id="lineText">Time to stand up and stretch.</div>
+  </div>
+
+  <script>
+    let currentReminderId = 0;
+    let dismissReadyAt = 0;
+
+    function invokeSafe(cmd, args) {
+      try {
+        if (window.__TAURI_INTERNALS__ && window.__TAURI_INTERNALS__.invoke) {
+          return window.__TAURI_INTERNALS__.invoke(cmd, args || {});
+        }
+        if (window.__TAURI__ && window.__TAURI__.core && window.__TAURI__.core.invoke) {
+          return window.__TAURI__.core.invoke(cmd, args || {});
+        }
+      } catch (_) {}
+      return Promise.resolve(null);
+    }
+
+    function applyTheme(theme) {
+      const normalized = theme === "day" ? "day" : "night";
+      document.documentElement.setAttribute("data-theme", normalized);
+    }
+
+    async function syncReminderPayload(incomingId) {
+      const payload = await invokeSafe("get_active_reminder");
+      if (!payload || !payload.visible) return;
+
+      applyTheme(payload.theme);
+
+      const nextId = (typeof incomingId === "number" && incomingId > 0)
+        ? incomingId
+        : (typeof payload.id === "number" ? payload.id : 0);
+
+      if (nextId > 0 && nextId !== currentReminderId) {
+        currentReminderId = nextId;
+        dismissReadyAt = Date.now() + 700;
+        const line = document.getElementById("lineText");
+        const text = (typeof payload.text === "string" && payload.text.trim().length > 0)
+          ? payload.text.trim()
+          : "Time to stand up and stretch.";
+        line.textContent = text;
+      }
+    }
+
+    async function dismiss(stoodUp) {
+      if (Date.now() < dismissReadyAt) return;
+      const payload = { stoodUp };
+      if (currentReminderId > 0) payload.reminderId = currentReminderId;
+      await invokeSafe("acknowledge_reminder", payload);
+    }
+
+    document.getElementById("bubble").addEventListener("click", () => dismiss(true));
+    document.getElementById("closeBtn").addEventListener("click", (e) => {
+      e.stopPropagation();
+      dismiss(true);
+    });
+
+    window.__standbyReminderSync = syncReminderPayload;
+
+    const listener = window.__TAURI__ && window.__TAURI__.event && window.__TAURI__.event.listen;
+    if (listener) {
+      listener("refresh_tip", (event) => {
+        const id = event && typeof event.payload === "number" ? event.payload : 0;
+        syncReminderPayload(id);
+      });
+      listener("theme-changed", () => syncReminderPayload());
+    }
+
+    setInterval(syncReminderPayload, 700);
+    syncReminderPayload();
+  </script>
+</body>
+</html>

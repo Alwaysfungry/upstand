@@ -1,0 +1,1106 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #07111f;
+      --panel: rgba(12, 27, 47, 0.86);
+      --panel-2: rgba(15, 33, 54, 0.9);
+      --text: #eaf1fb;
+      --muted: #8ea2bd;
+      --line: rgba(255, 255, 255, 0.12);
+      --bg-grad-1: #143356;
+      --bg-grad-2: #07111f;
+      --bg-grad-3: #050b15;
+      --green-1: #4ade80;
+      --green-2: #86efac;
+      --amber-1: #fbbf24;
+      --red-soft: #f87171;
+      --sleep: #e5e7eb;
+    }
+    html, body { width: 100%; height: 100%; overflow: hidden; }
+    body {
+      background: radial-gradient(90% 100% at 0% 0%, var(--bg-grad-1) 0%, var(--bg-grad-2) 58%, var(--bg-grad-3) 100%);
+      color: var(--text);
+      font-family: "SF Pro Display", "Segoe UI", -apple-system, sans-serif;
+    }
+    html[data-theme="day"] {
+      --bg: #f6f9ff;
+      --panel: rgba(255, 255, 255, 0.88);
+      --panel-2: rgba(244, 249, 255, 0.94);
+      --text: #0f172a;
+      --muted: #64748b;
+      --line: rgba(15, 23, 42, 0.13);
+      --bg-grad-1: #d9ecff;
+      --bg-grad-2: #edf4ff;
+      --bg-grad-3: #f8fbff;
+    }
+    html[data-theme="day"] .sidebar {
+      background: rgba(231, 239, 252, 0.55);
+      border-right-color: rgba(15, 23, 42, 0.13);
+    }
+    html[data-theme="day"] .brand { color: #0b1a30; }
+    html[data-theme="day"] .nav-item { color: #5b6f8a; }
+    html[data-theme="day"] .nav-item:hover { background: rgba(15,23,42,0.06); color: #143356; }
+    html[data-theme="day"] .nav-item.active {
+      color: #0d5f4f;
+      border-color: rgba(58, 189, 158, 0.35);
+      background: linear-gradient(130deg, rgba(83, 224, 197, 0.2), rgba(83, 224, 197, 0.08));
+    }
+    html[data-theme="day"] .win-btn { color: #5e738f; }
+    html[data-theme="day"] .win-btn:hover { background: rgba(15, 23, 42, 0.08); color: #162842; }
+    html[data-theme="day"] .card {
+      box-shadow: 0 10px 22px rgba(15, 23, 42, 0.12);
+    }
+    html[data-theme="day"] .hero-desc,
+    html[data-theme="day"] .pill,
+    html[data-theme="day"] .legend-item,
+    html[data-theme="day"] .about,
+    html[data-theme="day"] .note {
+      color: #48617f;
+    }
+    html[data-theme="day"] .sub,
+    html[data-theme="day"] .period-label,
+    html[data-theme="day"] .inline-hint {
+      color: #5f7692;
+    }
+    html[data-theme="day"] .about strong {
+      color: #1f314a;
+    }
+    html[data-theme="day"] .insight {
+      background: rgba(15, 23, 42, 0.04);
+      color: #365273;
+      border-color: rgba(15, 23, 42, 0.11);
+    }
+    html[data-theme="day"] .btn {
+      color: #183454;
+      background: #f7faff;
+      border-color: rgba(15, 23, 42, 0.18);
+    }
+    html[data-theme="day"] .btn:hover { background: #eef4ff; }
+    html[data-theme="day"] .btn.primary {
+      color: #0a2538;
+      background: linear-gradient(130deg, #74edd2, #4bc6ab);
+      border: none;
+    }
+    html[data-theme="day"] .btn.warn {
+      color: #8c2331;
+      border-color: rgba(220, 38, 38, 0.28);
+      background: rgba(220, 38, 38, 0.06);
+    }
+    html[data-theme="day"] .lang-card,
+    html[data-theme="day"] .period-group,
+    html[data-theme="day"] .cell,
+    html[data-theme="day"] .pill,
+    html[data-theme="day"] .insight {
+      border-color: rgba(15, 23, 42, 0.12);
+    }
+    html[data-theme="day"] .period-btn,
+    html[data-theme="day"] .int-btn { color: #1f3c5c; }
+    html[data-theme="day"] .period-btn.active {
+      background: rgba(45, 212, 191, 0.22);
+      color: #0f5a4d;
+    }
+
+    .app { width: 100%; height: 100%; display: grid; grid-template-columns: 240px 1fr; }
+
+    .sidebar {
+      border-right: 1px solid var(--line);
+      background: rgba(5, 11, 21, 0.58);
+      backdrop-filter: blur(8px);
+      padding: 22px 16px;
+    }
+    .brand {
+      margin: 8px 12px 22px;
+      font-weight: 800;
+      font-size: 23px;
+      letter-spacing: 2.2px;
+      color: #f2f7ff;
+    }
+    .nav { display: flex; flex-direction: column; gap: 8px; }
+    .nav-item {
+      border-radius: 12px;
+      border: 1px solid transparent;
+      color: var(--muted);
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      user-select: none;
+      transition: 0.2s ease;
+    }
+    .nav-item:hover { background: rgba(255,255,255,0.05); color: #dbe8fb; }
+    .nav-item.active {
+      color: #c6ffef;
+      border-color: rgba(113, 231, 207, 0.25);
+      background: linear-gradient(130deg, rgba(113, 231, 207, 0.16), rgba(113, 231, 207, 0.04));
+    }
+    .nav-icon { width: 18px; height: 18px; }
+
+    .titlebar {
+      position: fixed;
+      left: 240px;
+      right: 0;
+      top: 0;
+      height: 42px;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 6px;
+      padding: 0 10px;
+      -webkit-app-region: drag;
+      z-index: 20;
+    }
+    .win-btn {
+      -webkit-app-region: no-drag;
+      width: 30px;
+      height: 28px;
+      border: none;
+      border-radius: 8px;
+      color: #8ba0bc;
+      background: transparent;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .win-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+    .win-btn.close:hover { background: rgba(255, 93, 93, 0.22); color: #ffd7d7; }
+    .main {
+      padding: 58px 28px 24px;
+      overflow: auto;
+      scrollbar-width: none;
+    }
+    .main::-webkit-scrollbar { width: 0; height: 0; }
+    .section { display: none; }
+    .section.active { display: block; animation: reveal 0.22s ease; }
+    @keyframes reveal {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card {
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: linear-gradient(145deg, var(--panel), var(--panel-2));
+      box-shadow: 0 12px 22px rgba(0,0,0,0.28);
+      padding: 18px;
+    }
+
+    .h1 { font-size: 30px; font-weight: 650; letter-spacing: 0.3px; margin-bottom: 8px; }
+    .sub { color: var(--muted); font-size: 14px; line-height: 1.5; margin-bottom: 14px; }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      gap: 16px;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+    .sphere-wrap { display: flex; justify-content: center; }
+    .sphere {
+      width: 112px;
+      height: 112px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 30%, #c8ffe8 0%, #7ee9cc 24%, #38b798 60%, #195548 100%);
+      box-shadow: 0 0 0 7px rgba(126, 233, 204, 0.08), 0 0 30px rgba(126, 233, 204, 0.2);
+      animation: spin 10s linear infinite;
+    }
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .hero-title { font-size: 19px; font-weight: 700; margin-bottom: 6px; }
+    .hero-desc { color: #c8d8ee; font-size: 14px; line-height: 1.5; }
+
+    .heat-title { font-size: 16px; font-weight: 650; margin-bottom: 10px; }
+    .heatmap {
+      display: grid;
+      grid-template-columns: repeat(24, minmax(0, 1fr));
+      gap: 7px;
+      margin-bottom: 12px;
+    }
+    .cell {
+      height: 32px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.06);
+      background: #101e31;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.16s ease;
+    }
+    .cell:hover { transform: translateY(-1px); }
+    .cell span {
+      font-size: 11px;
+      font-weight: 600;
+      color: rgba(233, 241, 252, 0.7);
+      letter-spacing: 0.2px;
+    }
+
+    .legend { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+    .legend-item { font-size: 11px; color: #cddcf1; display: flex; gap: 6px; align-items: center; }
+    .dot { width: 10px; height: 10px; border-radius: 99px; display: inline-block; }
+
+    .stats { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
+    .pill {
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.03);
+      padding: 7px 12px;
+      color: #dce8fb;
+      font-size: 12px;
+    }
+
+    .insight {
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.03);
+      color: #c8d8ee;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .actions { margin-top: 14px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .period-row {
+      margin-top: 8px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .period-label {
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .period-group {
+      display: inline-flex;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      overflow: hidden;
+      background: rgba(255,255,255,0.03);
+    }
+    .period-btn {
+      border: none;
+      background: transparent;
+      color: #d6e2f6;
+      padding: 7px 12px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .period-btn + .period-btn { border-left: 1px solid var(--line); }
+    .period-btn.active {
+      background: rgba(113, 231, 207, 0.18);
+      color: #bafee9;
+    }
+    .btn {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.02);
+      color: #e6f0ff;
+      border-radius: 10px;
+      padding: 10px 14px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+    .btn:hover { background: rgba(255,255,255,0.06); }
+    .btn.primary {
+      border: none;
+      background: linear-gradient(130deg, #74edd2, #4bc6ab);
+      color: #092032;
+      font-weight: 700;
+    }
+    .btn.warn {
+      border-color: rgba(248, 113, 113, 0.35);
+      color: #ffdada;
+      background: rgba(248, 113, 113, 0.08);
+    }
+
+    .interval-grid { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+    .int-btn {
+      min-width: 108px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: rgba(255,255,255,0.03);
+      color: #d5e4f9;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .int-btn.active {
+      color: #b6ffe8;
+      border-color: rgba(113, 231, 207, 0.32);
+      background: rgba(113, 231, 207, 0.14);
+    }
+    .confirm-row { display: none; margin-top: 12px; gap: 10px; }
+    .confirm-row.visible { display: flex; }
+    .lang-columns {
+      margin-top: 12px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      max-width: 760px;
+    }
+    .lang-card {
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      padding: 12px;
+      background: rgba(255,255,255,0.03);
+    }
+    .lang-title {
+      font-size: 13px;
+      color: #cddcf1;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+
+    .about { max-width: 760px; color: #d2def0; line-height: 1.7; font-size: 15px; }
+    .about p + p { margin-top: 10px; }
+    .about strong { color: #f3f8ff; }
+
+    .note { color: var(--muted); font-size: 12px; margin-top: 8px; }
+    .inline-hint { font-size: 12px; color: #fbbf24; min-height: 18px; }
+    .inline-hint.ok { color: #86efac; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">UPSTAND</div>
+      <div class="nav">
+        <div class="nav-item active" onclick="switchTab(0)">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14v4"/><path d="M12 10v8"/><path d="M17 6v12"/></svg>
+          <span id="navActivity">Activity Insights</span>
+        </div>
+        <div class="nav-item" onclick="switchTab(1)">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.5"/><path d="M19.4 15a1 1 0 0 0 .2-1.1l-1-1.7a1 1 0 0 1 0-1l1-1.7a1 1 0 0 0-.2-1.1l-1.6-1.6a1 1 0 0 0-1.1-.2l-1.7 1a1 1 0 0 1-1 0l-1.7-1a1 1 0 0 0-1.1.2L8.6 5.4a1 1 0 0 0-.2 1.1l1 1.7a1 1 0 0 1 0 1l-1 1.7a1 1 0 0 0 .2 1.1l1.6 1.6a1 1 0 0 0 1.1.2l1.7-1a1 1 0 0 1 1 0l1.7 1a1 1 0 0 0 1.1-.2z"/></svg>
+          <span id="navInterval">Reminder Interval</span>
+        </div>
+        <div class="nav-item" onclick="switchTab(2)">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h10"/><path d="M9 3v2"/><path d="M7 5c0 4-1.5 7-4 9"/><path d="M5 10c1.5 1 3 2.6 4 4.5"/><path d="M14 19h6"/><path d="M17 5l5 14"/><path d="M22 5l-5 14"/></svg>
+          <span id="navLanguage">Language</span>
+        </div>
+        <div class="nav-item" onclick="switchTab(3)">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 10v6"/><path d="M12 7h.01"/></svg>
+          <span id="navAbout">About</span>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="titlebar" data-tauri-drag-region>
+        <button class="win-btn" id="minBtn" title="Minimize">−</button>
+        <button class="win-btn" id="maxBtn" title="Maximize">□</button>
+        <button class="win-btn close" id="closeBtn" title="Close">✕</button>
+      </div>
+
+      <section class="section active">
+        <div class="h1" id="titleDashboard">Dashboard</div>
+        <div class="sub" id="subDashboard">Your 24-hour sit/stand visualization center.</div>
+
+        <div class="card">
+          <div class="hero">
+            <div class="sphere-wrap"><div class="sphere" id="sphere"></div></div>
+            <div>
+              <div class="hero-title" id="heroTitle">Spine pressure: Light</div>
+              <div class="hero-desc" id="heroDesc">Great rhythm today. Keep one more shoulder/neck stretch to stay in the green zone.</div>
+            </div>
+          </div>
+
+          <div class="heat-title" id="heatTitle">24H Guardian Heatmap</div>
+          <div class="legend">
+            <div class="legend-item"><span class="dot" style="background:#4ade80"></span><span id="legendHigh">High activity</span></div>
+            <div class="legend-item"><span class="dot" style="background:#86efac"></span><span id="legendModerate">Moderate activity</span></div>
+            <div class="legend-item"><span class="dot" style="background:#fbbf24"></span><span id="legendLightSedentary">Light sedentary</span></div>
+            <div class="legend-item"><span class="dot" style="background:#f87171"></span><span id="legendDeepSedentary">Deep sedentary</span></div>
+            <div class="legend-item"><span class="dot" style="background:#e5e7eb"></span><span id="legendSleep">Sleep/idle</span></div>
+          </div>
+          <div class="heatmap" id="heatmap"></div>
+
+          <div class="stats" id="stats"></div>
+
+          <div class="insight" id="insight"></div>
+
+          <div class="period-row">
+            <span class="period-label" id="periodLabel">Data range</span>
+            <div class="period-group">
+              <button class="period-btn active" data-period="daily" id="periodDaily">Daily</button>
+              <button class="period-btn" data-period="weekly" id="periodWeekly">Weekly</button>
+              <button class="period-btn" data-period="monthly" id="periodMonthly">Monthly</button>
+            </div>
+          </div>
+          <div class="actions">
+            <button class="btn warn" id="resetBtn">Reset Daily</button>
+            <button class="btn" id="csvBtn">Export CSV</button>
+            <button class="btn primary" id="pngBtn">Export Heatmap PNG</button>
+            <span class="inline-hint" id="exportHint"></span>
+          </div>
+          <div class="note" id="exportNote">Export is available when at least 5 records exist in the selected range. Local only, no cloud upload.</div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="h1" id="titleInterval">Reminder Interval</div>
+        <div class="sub" id="subInterval">Select your cadence and confirm to apply immediately.</div>
+        <div class="interval-grid">
+          <button class="int-btn" data-mins="5" onclick="pickInterval(5)">5 MIN</button>
+          <button class="int-btn" data-mins="10" onclick="pickInterval(10)">10 MIN</button>
+          <button class="int-btn" data-mins="20" onclick="pickInterval(20)">20 MIN</button>
+          <button class="int-btn" data-mins="30" onclick="pickInterval(30)">30 MIN</button>
+          <button class="int-btn" data-mins="50" onclick="pickInterval(50)">50 MIN</button>
+        </div>
+        <div class="confirm-row" id="confirmRow">
+          <button class="btn" onclick="cancelInterval()">Cancel</button>
+          <button class="btn primary" onclick="confirmInterval()">Confirm</button>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="h1" id="titleLanguage">Language</div>
+        <div class="sub" id="subLanguage">Choose interface language and appearance.</div>
+        <div class="lang-columns">
+          <div class="lang-card">
+            <div class="lang-title" id="langUiTitle">App Interface</div>
+            <div class="interval-grid" style="margin-top:0;">
+              <button class="int-btn" id="langBtnEn">English</button>
+              <button class="int-btn" id="langBtnZh">简体中文</button>
+            </div>
+          </div>
+          <div class="lang-card">
+            <div class="lang-title" id="appearanceTitle">Appearance</div>
+            <div class="interval-grid" style="margin-top:0;">
+              <button class="int-btn" id="themeBtnNight">Night</button>
+              <button class="int-btn" id="themeBtnDay">Day</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="h1" id="titleAbout">About Upstand</div>
+        <div class="card about">
+          <p id="aboutLine1"><strong>Upstand</strong> is a tool that helps you remember to stand up without breaking your focus.</p>
+          <p id="aboutLine2"><strong>Data policy:</strong> all processing and export generation are local-only. No network transfer.</p>
+          <p id="aboutLine3"><strong>Contact:</strong> linglingluoluox@163.com</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    function invokeSafe(cmd, args) {
+      try {
+        if (window.__TAURI_INTERNALS__ && window.__TAURI_INTERNALS__.invoke) {
+          return window.__TAURI_INTERNALS__.invoke(cmd, args || {});
+        }
+        if (window.__TAURI__ && window.__TAURI__.core && window.__TAURI__.core.invoke) {
+          return window.__TAURI__.core.invoke(cmd, args || {});
+        }
+      } catch (_) {}
+      return Promise.resolve(null);
+    }
+
+    async function listenSafe(name, cb) {
+      try {
+        if (window.__TAURI__ && window.__TAURI__.event && window.__TAURI__.event.listen) {
+          return await window.__TAURI__.event.listen(name, cb);
+        }
+      } catch (_) {}
+      return null;
+    }
+
+    document.getElementById("minBtn").addEventListener("click", () => invokeSafe("window_minimize", { label: "settings" }));
+    document.getElementById("maxBtn").addEventListener("click", () => invokeSafe("window_toggle_maximize", { label: "settings" }));
+    document.getElementById("closeBtn").addEventListener("click", () => invokeSafe("window_close", { label: "settings" }));
+
+    function switchTab(idx) {
+      document.querySelectorAll(".section").forEach((s, i) => s.classList.toggle("active", i === idx));
+      document.querySelectorAll(".nav-item").forEach((n, i) => n.classList.toggle("active", i === idx));
+      if (idx === 0) refreshAnalytics();
+    }
+    window.switchTab = switchTab;
+
+    const intervalKey = "standby_interval_minutes";
+    const langKey = "standby_lang";
+    const themeKey = "standby_theme";
+    let currentLang = localStorage.getItem(langKey) || "en";
+    let currentTheme = localStorage.getItem(themeKey) || "night";
+    let currentInterval = Number(localStorage.getItem(intervalKey)) || 50;
+    let pendingInterval = currentInterval;
+    let dirty = false;
+    let selectedPeriod = "daily";
+    const EXPORT_MIN_RECORDS = 5;
+
+    let analytics = {
+      hourly_sedentary: new Array(24).fill(0),
+      hourly_standup: new Array(24).fill(0),
+      hourly_sedentary_delay_secs: new Array(24).fill(0),
+      standup_sessions: 0,
+      sedentary_sessions: 0,
+      total_sitting_secs: 0,
+      record_count: 0
+    };
+
+    const i18n = {
+      en: {
+        navActivity: "Activity Insights",
+        navInterval: "Reminder Interval",
+        navLanguage: "Language",
+        navAbout: "About",
+        titleDashboard: "Dashboard",
+        subDashboard: "Your 24-hour sit/stand visualization center.",
+        heatTitle: "24H Guardian Heatmap",
+        legendHigh: "High activity",
+        legendModerate: "Moderate activity",
+        legendLightSedentary: "Light sedentary",
+        legendDeepSedentary: "Deep sedentary",
+        legendSleep: "Sleep/idle",
+        exportCsv: "Export CSV",
+        exportPng: "Export Heatmap PNG",
+        exportNote: "Export is available when at least 5 records exist in the selected range. Local only, no cloud upload.",
+        periodLabel: "Data range",
+        periodDaily: "Daily",
+        periodWeekly: "Weekly",
+        periodMonthly: "Monthly",
+        resetDaily: "Reset Daily",
+        resetConfirm: "Reset today's records now?",
+        resetDone: "Today's records were cleared.",
+        resetFailed: "Reset failed. Please try again.",
+        titleInterval: "Reminder Interval",
+        subInterval: "Select your cadence and confirm to apply immediately.",
+        titleLanguage: "Language",
+        subLanguage: "Choose interface language and appearance.",
+        langUiTitle: "App Interface",
+        appearanceTitle: "Appearance",
+        langEnglish: "English",
+        langChinese: "Simplified Chinese",
+        themeNight: "Night",
+        themeDay: "Day",
+        titleAbout: "About Upstand",
+        aboutLine1: "<strong>Upstand</strong> is a tool that helps you remember to stand up without breaking your focus.",
+        aboutLine2: "<strong>Data policy:</strong> all processing and export generation are local-only. No network transfer.",
+        aboutLine3: "<strong>Contact:</strong> linglingluoluox@163.com",
+        noData: "There's not enough data for export.",
+        exportSaved: "Exported to: {path}",
+        exportFailed: "Export failed. Please try again.",
+        heroLightTitle: "Spine pressure: Light",
+        heroLightDesc: "Execution quality is strong. Keep your rhythm for the rest of the day.",
+        heroMidTitle: "Spine pressure: Moderate",
+        heroMidDesc: "A little more sitting than ideal. One extra mobility break will help.",
+        heroHighTitle: "Spine pressure: High",
+        heroHighDesc: "Long sedentary streak detected. Prioritize a short stretch now.",
+        insightHealthy: "Current status: healthy rhythm. Keep this steady pace.",
+        insightBalanced: "Current status: balanced. One short standup keeps it green.",
+        insightAttention: "Current status: too much sitting. Take a quick standup now.",
+        statsSedentary: "Sedentary sessions: {n}",
+        statsStandups: "Standups: {n}",
+        statsSitting: "Total sitting: {n} min",
+        heatmapCaption: "Upstand {range} Heatmap",
+        heatmapLocal: "Local data only"
+      },
+      "zh-CN": {
+        navActivity: "行为洞察",
+        navInterval: "提醒间隔",
+        navLanguage: "语言设置",
+        navAbout: "关于",
+        titleDashboard: "数据面板",
+        subDashboard: "你的24 小时久坐/站立可视化中心。",
+        heatTitle: "24 小时守护热力图",
+        legendHigh: "高频活动",
+        legendModerate: "适度活动",
+        legendLightSedentary: "轻度久坐",
+        legendDeepSedentary: "深度久坐",
+        legendSleep: "睡眠/空闲",
+        exportCsv: "导出 CSV",
+        exportPng: "导出热力图 PNG",
+        exportNote: "所选时间范围内至少有 5 条记录即可导出。仅本地处理，不上传云端。",
+        periodLabel: "数据范围",
+        periodDaily: "每日",
+        periodWeekly: "每周",
+        periodMonthly: "每月",
+        resetDaily: "重置今日",
+        resetConfirm: "现在清空今天的记录吗？",
+        resetDone: "已清空今天的记录。",
+        resetFailed: "重置失败，请重试。",
+        titleInterval: "提醒间隔",
+        subInterval: "选择工作节奏，点击确认后立即生效并重置计时。",
+        titleLanguage: "语言设置",
+        subLanguage: "选择界面语言和外观。",
+        langUiTitle: "界面语言",
+        appearanceTitle: "外观模式",
+        langEnglish: "英文",
+        langChinese: "简体中文",
+        themeNight: "夜间",
+        themeDay: "日间",
+        titleAbout: "关于Upstand",
+        aboutLine1: "<strong>Upstand</strong> 是一个帮你避免久坐、又不打断专注的小工具。",
+        aboutLine2: "<strong>数据策略：</strong> 所有处理和导出均在本地完成，不进行网络传输。",
+        aboutLine3: "<strong>联系：</strong> linglingluoluox@163.com",
+        noData: "导出数据不足。",
+        exportSaved: "已导出到：{path}",
+        exportFailed: "导出失败，请重试。",
+        heroLightTitle: "脊柱压力：轻度",
+        heroLightDesc: "执行节奏良好，继续保持，今天状态很稳。",
+        heroMidTitle: "脊柱压力：中等",
+        heroMidDesc: "久坐略多，建议补一次短时拉伸。",
+        heroHighTitle: "脊柱压力：偏高",
+        heroHighDesc: "检测到较长久坐连续段，建议立刻起身活动。",
+        insightHealthy: "当前状态：节奏健康，继续保持。",
+        insightBalanced: "当前状态：基本平衡，再补一次起身更好。",
+        insightAttention: "当前状态：久坐偏多，建议马上起身活动。",
+        statsSedentary: "久坐次数：{n}",
+        statsStandups: "起身次数：{n}",
+        statsSitting: "总久坐：{n} 分钟",
+        heatmapCaption: "Upstand {range} 热力图",
+        heatmapLocal: "仅本地数据"
+      }
+    };
+
+    function tr(key) {
+      return (i18n[currentLang] && i18n[currentLang][key]) || i18n.en[key] || key;
+    }
+
+    function applyLanguage() {
+      const ids = [
+        "navActivity","navInterval","navLanguage","navAbout","titleDashboard","subDashboard","heatTitle",
+        "legendHigh","legendModerate","legendLightSedentary","legendDeepSedentary","legendSleep",
+        "exportNote","titleInterval","subInterval","titleLanguage","subLanguage","titleAbout","periodLabel",
+        "langUiTitle","appearanceTitle"
+      ];
+      ids.forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = tr(id);
+      });
+      document.getElementById("csvBtn").textContent = tr("exportCsv");
+      document.getElementById("pngBtn").textContent = tr("exportPng");
+      document.getElementById("resetBtn").textContent = tr("resetDaily");
+      document.getElementById("langBtnEn").textContent = tr("langEnglish");
+      document.getElementById("langBtnZh").textContent = tr("langChinese");
+      document.getElementById("themeBtnNight").textContent = tr("themeNight");
+      document.getElementById("themeBtnDay").textContent = tr("themeDay");
+      document.getElementById("langBtnEn").classList.toggle("active", currentLang === "en");
+      document.getElementById("langBtnZh").classList.toggle("active", currentLang === "zh-CN");
+      document.getElementById("periodDaily").textContent = tr("periodDaily");
+      document.getElementById("periodWeekly").textContent = tr("periodWeekly");
+      document.getElementById("periodMonthly").textContent = tr("periodMonthly");
+      document.getElementById("aboutLine1").innerHTML = tr("aboutLine1");
+      document.getElementById("aboutLine2").innerHTML = tr("aboutLine2");
+      document.getElementById("aboutLine3").innerHTML = tr("aboutLine3");
+      updatePeriodUI();
+      renderStats();
+      renderHeroAndInsight();
+    }
+
+    function applyTheme() {
+      const normalized = currentTheme === "day" ? "day" : "night";
+      currentTheme = normalized;
+      localStorage.setItem(themeKey, currentTheme);
+      document.documentElement.setAttribute("data-theme", currentTheme);
+      document.getElementById("themeBtnNight").classList.toggle("active", currentTheme === "night");
+      document.getElementById("themeBtnDay").classList.toggle("active", currentTheme === "day");
+    }
+
+    async function setUiLanguage(lang) {
+      currentLang = (lang === "zh-CN") ? "zh-CN" : "en";
+      localStorage.setItem(langKey, currentLang);
+      await invokeSafe("set_language", { language: currentLang });
+      applyLanguage();
+    }
+
+    async function setTheme(theme) {
+      currentTheme = (theme === "day") ? "day" : "night";
+      applyTheme();
+      await invokeSafe("set_theme", { theme: currentTheme });
+    }
+
+    function updateIntervalUI() {
+      document.querySelectorAll(".int-btn").forEach((btn) => {
+        const mins = Number(btn.dataset.mins);
+        btn.classList.toggle("active", mins === pendingInterval);
+      });
+      document.getElementById("confirmRow").classList.toggle("visible", dirty);
+    }
+
+    function pickInterval(mins) {
+      pendingInterval = mins;
+      dirty = pendingInterval !== currentInterval;
+      updateIntervalUI();
+    }
+    window.pickInterval = pickInterval;
+
+    async function confirmInterval() {
+      const nextInterval = pendingInterval;
+      await invokeSafe("set_reminder_interval", { minutes: nextInterval });
+      currentInterval = nextInterval;
+      localStorage.setItem(intervalKey, String(currentInterval));
+      dirty = false;
+      updateIntervalUI();
+      await refreshAnalytics();
+    }
+    window.confirmInterval = confirmInterval;
+
+    function cancelInterval() {
+      pendingInterval = currentInterval;
+      dirty = false;
+      updateIntervalUI();
+    }
+    window.cancelInterval = cancelInterval;
+
+    function getPeriodLabel(period) {
+      if (period === "weekly") return tr("periodWeekly");
+      if (period === "monthly") return tr("periodMonthly");
+      return tr("periodDaily");
+    }
+
+    function updatePeriodUI() {
+      document.querySelectorAll(".period-btn").forEach((btn) => {
+        btn.classList.toggle("active", btn.dataset.period === selectedPeriod);
+      });
+    }
+
+    async function setPeriod(period) {
+      selectedPeriod = period;
+      updatePeriodUI();
+      await refreshAnalytics();
+    }
+
+    function classifyHour(hour) {
+      const sedentary = analytics.hourly_sedentary[hour] || 0;
+      const standup = analytics.hourly_standup[hour] || 0;
+      const sedentaryDelay = analytics.hourly_sedentary_delay_secs[hour] || 0;
+      const avgDelay = sedentary > 0 ? (sedentaryDelay / sedentary) : 0;
+      if (sedentary === 0 && standup === 0) return { color: "var(--sleep)", label: "sleep/idle" };
+      if (standup >= sedentary * 2 && standup > 0) return { color: "var(--green-1)", label: "high activity" };
+      if (standup > sedentary) return { color: "var(--green-2)", label: "moderate activity" };
+      if (avgDelay >= 180) return { color: "var(--red-soft)", label: "deep sedentary" };
+      return { color: "var(--amber-1)", label: "light sedentary" };
+    }
+
+    function classifyHourData(data, hour) {
+      const sedentary = (data.hourly_sedentary && data.hourly_sedentary[hour]) || 0;
+      const standup = (data.hourly_standup && data.hourly_standup[hour]) || 0;
+      const delay = (data.hourly_sedentary_delay_secs && data.hourly_sedentary_delay_secs[hour]) || 0;
+      const avgDelay = sedentary > 0 ? (delay / sedentary) : 0;
+      if (sedentary === 0 && standup === 0) {
+        return { domColor: "var(--sleep)", pngColor: "#e5e7eb", label: "sleep/idle" };
+      }
+      if (standup >= sedentary * 2 && standup > 0) {
+        return { domColor: "var(--green-1)", pngColor: "#4ade80", label: "high activity" };
+      }
+      if (standup > sedentary) {
+        return { domColor: "var(--green-2)", pngColor: "#86efac", label: "moderate activity" };
+      }
+      if (avgDelay >= 180) {
+        return { domColor: "var(--red-soft)", pngColor: "#f87171", label: "deep sedentary" };
+      }
+      return { domColor: "var(--amber-1)", pngColor: "#fbbf24", label: "light sedentary" };
+    }
+
+    function renderHeatmap() {
+      const map = document.getElementById("heatmap");
+      map.innerHTML = "";
+      for (let h = 0; h < 24; h++) {
+        const cls = classifyHour(h);
+        const el = document.createElement("div");
+        el.className = "cell";
+        el.style.background = cls.color;
+        el.title = `${String(h).padStart(2, "0")}:00 - ${cls.label} | standup:${analytics.hourly_standup[h] || 0}, sedentary:${analytics.hourly_sedentary[h] || 0}`;
+        const t = document.createElement("span");
+        t.textContent = String(h).padStart(2, "0");
+        el.appendChild(t);
+        map.appendChild(el);
+      }
+    }
+
+    function renderHeroAndInsight() {
+      const s = analytics.standup_sessions || 0;
+      const d = analytics.sedentary_sessions || 0;
+      const score = d === 0 ? 1 : s / d;
+
+      const sphere = document.getElementById("sphere");
+      const title = document.getElementById("heroTitle");
+      const desc = document.getElementById("heroDesc");
+      const insight = document.getElementById("insight");
+
+      if (score >= 1) {
+        sphere.style.background = "radial-gradient(circle at 35% 30%, #d4ffe9 0%, #8bf0d6 24%, #4ad4ae 60%, #1c6a56 100%)";
+        title.textContent = tr("heroLightTitle");
+        desc.textContent = tr("heroLightDesc");
+      } else if (score >= 0.5) {
+        sphere.style.background = "radial-gradient(circle at 35% 30%, #fff6d1 0%, #fde68a 24%, #fbbf24 60%, #8a640f 100%)";
+        title.textContent = tr("heroMidTitle");
+        desc.textContent = tr("heroMidDesc");
+      } else {
+        sphere.style.background = "radial-gradient(circle at 35% 30%, #ffd8d8 0%, #fca5a5 24%, #f87171 60%, #8c2525 100%)";
+        title.textContent = tr("heroHighTitle");
+        desc.textContent = tr("heroHighDesc");
+      }
+
+      if (score >= 1) insight.textContent = tr("insightHealthy");
+      else if (score >= 0.5) insight.textContent = tr("insightBalanced");
+      else insight.textContent = tr("insightAttention");
+    }
+
+    function renderStats() {
+      const mins = Math.round((analytics.total_sitting_secs || 0) / 60);
+      const stats = document.getElementById("stats");
+      stats.innerHTML = "";
+      [
+        tr("statsSedentary").replace("{n}", analytics.sedentary_sessions || 0),
+        tr("statsStandups").replace("{n}", analytics.standup_sessions || 0),
+        tr("statsSitting").replace("{n}", mins),
+      ].forEach((text) => {
+        const p = document.createElement("div");
+        p.className = "pill";
+        p.textContent = text;
+        stats.appendChild(p);
+      });
+    }
+
+    function setExportHint(message, ok = false, path = "") {
+      const hint = document.getElementById("exportHint");
+      hint.classList.toggle("ok", ok);
+      if (ok && path) {
+        const safePath = path.replace(/"/g, "&quot;");
+        hint.innerHTML = `<a href="#" id="exportPathLink" data-path="${safePath}" style="color:inherit;text-decoration:underline;">${message}</a>`;
+        const link = document.getElementById("exportPathLink");
+        if (link) {
+          link.addEventListener("click", async (e) => {
+            e.preventDefault();
+            const target = e.currentTarget.getAttribute("data-path") || "";
+            await invokeSafe("reveal_in_explorer", { path: target });
+          });
+        }
+      } else {
+        hint.textContent = message || "";
+      }
+    }
+
+    async function refreshAnalytics() {
+      const data = await invokeSafe("get_analytics", { period: selectedPeriod });
+      if (!data) return;
+      analytics = data;
+      if (hasExportData()) setExportHint("");
+      renderHeatmap();
+      renderStats();
+      renderHeroAndInsight();
+    }
+
+    function hasExportData() {
+      return (analytics.record_count || 0) >= EXPORT_MIN_RECORDS;
+    }
+
+    async function exportCsv() {
+      await refreshAnalytics();
+      if (!hasExportData()) {
+        setExportHint(tr("noData"));
+        return;
+      }
+      try {
+        setExportHint("");
+        const result = await invokeSafe("export_analytics_csv", { period: selectedPeriod });
+        if (typeof result === "string" && result.length > 0) {
+          setExportHint(tr("exportSaved").replace("{path}", result), true, result);
+          return;
+        }
+        setExportHint(tr("exportFailed"));
+      } catch (e) {
+        const msg = String(e || "");
+        if (msg.includes("NOT_ENOUGH_DATA")) {
+          setExportHint(tr("noData"));
+          return;
+        }
+        setExportHint(tr("exportFailed"));
+      }
+    }
+
+    async function exportHeatmapPng() {
+      await refreshAnalytics();
+      if (!hasExportData()) {
+        setExportHint(tr("noData"));
+        return;
+      }
+      const snapshot = JSON.parse(JSON.stringify(analytics));
+      const width = 900;
+      const height = 1200;
+
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d");
+
+      const gradient = ctx.createLinearGradient(0, 0, width, height);
+      gradient.addColorStop(0, "#07111f");
+      gradient.addColorStop(1, "#041025");
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, width, height);
+
+      const cardX = 78;
+      const cardY = 110;
+      const cardW = 744;
+      const cardH = 980;
+      ctx.fillStyle = "rgba(10, 28, 52, 0.86)";
+      ctx.beginPath();
+      ctx.roundRect(cardX, cardY, cardW, cardH, 26);
+      ctx.fill();
+      ctx.strokeStyle = "rgba(255,255,255,0.12)";
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      ctx.fillStyle = "#eaf1fb";
+      ctx.font = "16px 'Noto Sans', 'Segoe UI'";
+      const caption = tr("heatmapCaption").replace("{range}", getPeriodLabel(selectedPeriod));
+      ctx.fillText(caption, cardX + 34, cardY + 48);
+      ctx.font = "12px 'Noto Sans', 'Segoe UI'";
+      ctx.fillStyle = "#9fb0c8";
+      ctx.fillText(tr("heatmapLocal"), cardX + 34, cardY + 72);
+
+      const statsY = cardY + 114;
+      const statTexts = [
+        tr("statsSedentary").replace("{n}", snapshot.sedentary_sessions || 0),
+        tr("statsStandups").replace("{n}", snapshot.standup_sessions || 0),
+        tr("statsSitting").replace("{n}", Math.round((snapshot.total_sitting_secs || 0) / 60))
+      ];
+      let statX = cardX + 34;
+      for (const text of statTexts) {
+        const w = ctx.measureText(text).width + 26;
+        ctx.fillStyle = "rgba(255,255,255,0.06)";
+        ctx.beginPath();
+        ctx.roundRect(statX, statsY, w, 34, 17);
+        ctx.fill();
+        ctx.strokeStyle = "rgba(255,255,255,0.18)";
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        ctx.fillStyle = "#d7e6fb";
+        ctx.font = "13px 'Noto Sans', 'Segoe UI'";
+        ctx.fillText(text, statX + 13, statsY + 22);
+        statX += w + 10;
+      }
+
+      const gridTop = cardY + 186;
+      const colX = [cardX + 86, cardX + 398];
+      const capsuleW = 124;
+      const capsuleH = 42;
+      const rowGap = 18;
+
+      for (let i = 0; i < 24; i++) {
+        const cls = classifyHourData(snapshot, i);
+        const col = i < 12 ? 0 : 1;
+        const row = i % 12;
+        const x = colX[col];
+        const y = gridTop + row * (capsuleH + rowGap);
+        const hour = String(i).padStart(2, "0");
+
+        ctx.fillStyle = "rgba(255,255,255,0.08)";
+        ctx.beginPath();
+        ctx.roundRect(x, y, capsuleW, capsuleH, 10);
+        ctx.fill();
+
+        ctx.fillStyle = cls.pngColor;
+        ctx.beginPath();
+        ctx.roundRect(x + 1, y + 1, capsuleW - 2, capsuleH - 2, 9);
+        ctx.fill();
+
+        ctx.fillStyle = "#07111f";
+        ctx.font = "600 12px 'Noto Sans', 'Segoe UI'";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(hour, x + capsuleW / 2, y + capsuleH / 2);
+
+        ctx.textAlign = "left";
+        ctx.fillStyle = "#d5e3f7";
+        ctx.font = "12px 'Noto Sans', 'Segoe UI'";
+        ctx.fillText(`${hour}:00`, x + capsuleW + 14, y + capsuleH / 2 + 1);
+      }
+
+      try {
+        setExportHint("");
+        const dataUrl = canvas.toDataURL("image/png");
+        const result = await invokeSafe("export_analytics_png", { dataUrl });
+        if (typeof result === "string" && result.length > 0) {
+          setExportHint(tr("exportSaved").replace("{path}", result), true, result);
+          return;
+        }
+        setExportHint(tr("exportFailed"));
+      } catch (_) {
+        setExportHint(tr("exportFailed"));
+      }
+    }
+
+    async function resetDailyData() {
+      if (!window.confirm(tr("resetConfirm"))) return;
+      try {
+        const result = await invokeSafe("reset_daily_records");
+        if (result === null || result === undefined) {
+          setExportHint(tr("resetDone"), true);
+          await refreshAnalytics();
+          return;
+        }
+        setExportHint(tr("resetDone"), true);
+        await refreshAnalytics();
+      } catch (_) {
+        setExportHint(tr("resetFailed"));
+      }
+    }
+
+    document.getElementById("csvBtn").addEventListener("click", exportCsv);
+    document.getElementById("pngBtn").addEventListener("click", exportHeatmapPng);
+    document.getElementById("resetBtn").addEventListener("click", resetDailyData);
+    document.querySelectorAll(".period-btn").forEach((btn) => {
+      btn.addEventListener("click", () => setPeriod(btn.dataset.period));
+    });
+    document.getElementById("langBtnEn").addEventListener("click", () => setUiLanguage("en"));
+    document.getElementById("langBtnZh").addEventListener("click", () => setUiLanguage("zh-CN"));
+    document.getElementById("themeBtnNight").addEventListener("click", () => setTheme("night"));
+    document.getElementById("themeBtnDay").addEventListener("click", () => setTheme("day"));
+
+    updateIntervalUI();
+    updatePeriodUI();
+    applyTheme();
+    invokeSafe("get_reminder_interval").then((mins) => {
+      const parsed = Number(mins);
+      if (Number.isFinite(parsed) && parsed > 0) {
+        currentInterval = parsed;
+        pendingInterval = parsed;
+        dirty = false;
+        localStorage.setItem(intervalKey, String(parsed));
+        updateIntervalUI();
+      }
+    });
+    invokeSafe("get_language").then((lang) => {
+      if (lang === "en" || lang === "zh-CN") {
+        currentLang = lang;
+        localStorage.setItem(langKey, currentLang);
+        applyLanguage();
+      }
+    });
+    applyLanguage();
+    invokeSafe("get_theme").then((theme) => {
+      if (theme === "day" || theme === "night") {
+        currentTheme = theme;
+        applyTheme();
+      }
+    });
+    refreshAnalytics();
+    listenSafe("analytics-updated", refreshAnalytics);
+    listenSafe("language-changed", (event) => {
+      const lang = event && event.payload;
+      if (lang === "en" || lang === "zh-CN") {
+        currentLang = lang;
+        localStorage.setItem(langKey, currentLang);
+        applyLanguage();
+      }
+    });
+    listenSafe("theme-changed", (event) => {
+      const theme = event && event.payload;
+      if (theme === "day" || theme === "night") {
+        currentTheme = theme;
+        applyTheme();
+      }
+    });
+  </script>
+</body>
+</html>
