@@ -767,36 +767,71 @@
       await refreshAnalytics();
     }
 
+    function clamp01(value) {
+      return Math.max(0, Math.min(1, value));
+    }
+
+    function mixChannel(a, b, t) {
+      return Math.round(a + (b - a) * t);
+    }
+
+    function rgbToCss(rgb) {
+      return `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
+    }
+
+    function rgbToHex(rgb) {
+      return `#${rgb.map((v) => v.toString(16).padStart(2, "0")).join("")}`;
+    }
+
+    function mixRgb(from, to, t) {
+      const s = clamp01(t);
+      return [
+        mixChannel(from[0], to[0], s),
+        mixChannel(from[1], to[1], s),
+        mixChannel(from[2], to[2], s)
+      ];
+    }
+
+    function classifyLabelFromScore(score) {
+      if (score >= 0.55) return "high activity";
+      if (score > 0) return "moderate activity";
+      if (score <= -0.55) return "deep sedentary";
+      if (score < 0) return "light sedentary";
+      return "balanced";
+    }
+
     function classifyHour(hour) {
-      const sedentary = analytics.hourly_sedentary[hour] || 0;
-      const standup = analytics.hourly_standup[hour] || 0;
-      const sedentaryDelay = analytics.hourly_sedentary_delay_secs[hour] || 0;
-      const avgDelay = sedentary > 0 ? (sedentaryDelay / sedentary) : 0;
-      if (sedentary === 0 && standup === 0) return { color: "var(--sleep)", label: "sleep/idle" };
-      if (standup >= sedentary * 2 && standup > 0) return { color: "var(--green-1)", label: "high activity" };
-      if (standup > sedentary) return { color: "var(--green-2)", label: "moderate activity" };
-      if (avgDelay >= 180) return { color: "var(--red-soft)", label: "deep sedentary" };
-      return { color: "var(--amber-1)", label: "light sedentary" };
+      const cls = classifyHourData(analytics, hour);
+      return { color: cls.domColor, label: cls.label };
     }
 
     function classifyHourData(data, hour) {
       const sedentary = (data.hourly_sedentary && data.hourly_sedentary[hour]) || 0;
       const standup = (data.hourly_standup && data.hourly_standup[hour]) || 0;
-      const delay = (data.hourly_sedentary_delay_secs && data.hourly_sedentary_delay_secs[hour]) || 0;
-      const avgDelay = sedentary > 0 ? (delay / sedentary) : 0;
+      const total = sedentary + standup;
       if (sedentary === 0 && standup === 0) {
         return { domColor: "var(--sleep)", pngColor: "#e5e7eb", label: "sleep/idle" };
       }
-      if (standup >= sedentary * 2 && standup > 0) {
-        return { domColor: "var(--green-1)", pngColor: "#4ade80", label: "high activity" };
+      if (total <= 0) {
+        return { domColor: "var(--sleep)", pngColor: "#e5e7eb", label: "sleep/idle" };
       }
-      if (standup > sedentary) {
-        return { domColor: "var(--green-2)", pngColor: "#86efac", label: "moderate activity" };
+
+      // Balance score in [-1, 1]: -1 all sedentary, 0 balanced, +1 all standup.
+      const score = (standup - sedentary) / total;
+      const red = [248, 113, 113];
+      const amber = [251, 191, 36];
+      const green = [74, 222, 128];
+      let rgb;
+      if (score >= 0) {
+        rgb = mixRgb(amber, green, score);
+      } else {
+        rgb = mixRgb(red, amber, score + 1);
       }
-      if (avgDelay >= 180) {
-        return { domColor: "var(--red-soft)", pngColor: "#f87171", label: "deep sedentary" };
-      }
-      return { domColor: "var(--amber-1)", pngColor: "#fbbf24", label: "light sedentary" };
+      return {
+        domColor: rgbToCss(rgb),
+        pngColor: rgbToHex(rgb),
+        label: classifyLabelFromScore(score),
+      };
     }
 
     function renderHeatmap() {
