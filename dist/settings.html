@@ -412,10 +412,9 @@
 
           <div class="heat-title" id="heatTitle">24H Guardian Heatmap</div>
           <div class="legend">
-            <div class="legend-item"><span class="dot" style="background:#4ade80"></span><span id="legendHigh">High activity</span></div>
-            <div class="legend-item"><span class="dot" style="background:#86efac"></span><span id="legendModerate">Moderate activity</span></div>
-            <div class="legend-item"><span class="dot" style="background:#fbbf24"></span><span id="legendLightSedentary">Light sedentary</span></div>
-            <div class="legend-item"><span class="dot" style="background:#f87171"></span><span id="legendDeepSedentary">Deep sedentary</span></div>
+            <div class="legend-item"><span class="dot" style="background:#4ade80"></span><span id="legendActive">Active</span></div>
+            <div class="legend-item"><span class="dot" style="background:#fbbf24"></span><span id="legendBalanced">Balanced</span></div>
+            <div class="legend-item"><span class="dot" style="background:#f87171"></span><span id="legendSedentary">Sedentary</span></div>
             <div class="legend-item"><span class="dot" style="background:#e5e7eb"></span><span id="legendSleep">Sleep/idle</span></div>
           </div>
           <div class="heatmap" id="heatmap"></div>
@@ -553,10 +552,9 @@
         titleDashboard: "Dashboard",
         subDashboard: "Your 24-hour sit/stand visualization center.",
         heatTitle: "24H Guardian Heatmap",
-        legendHigh: "High activity",
-        legendModerate: "Moderate activity",
-        legendLightSedentary: "Light sedentary",
-        legendDeepSedentary: "Deep sedentary",
+        legendActive: "Active",
+        legendBalanced: "Balanced",
+        legendSedentary: "Sedentary",
         legendSleep: "Sleep/idle",
         exportCsv: "Export CSV",
         exportPng: "Export Heatmap PNG",
@@ -609,10 +607,9 @@
         titleDashboard: "数据面板",
         subDashboard: "你的24 小时久坐/站立可视化中心。",
         heatTitle: "24 小时守护热力图",
-        legendHigh: "高频活动",
-        legendModerate: "适度活动",
-        legendLightSedentary: "轻度久坐",
-        legendDeepSedentary: "深度久坐",
+        legendActive: "活跃",
+        legendBalanced: "平衡",
+        legendSedentary: "久坐",
         legendSleep: "睡眠/空闲",
         exportCsv: "导出 CSV",
         exportPng: "导出热力图 PNG",
@@ -666,7 +663,7 @@
     function applyLanguage() {
       const ids = [
         "navActivity","navInterval","navLanguage","navAbout","titleDashboard","subDashboard","heatTitle",
-        "legendHigh","legendModerate","legendLightSedentary","legendDeepSedentary","legendSleep",
+        "legendActive","legendBalanced","legendSedentary","legendSleep",
         "exportNote","titleInterval","subInterval","titleLanguage","subLanguage","titleAbout","periodLabel",
         "langUiTitle","appearanceTitle"
       ];
@@ -793,16 +790,14 @@
     }
 
     function classifyLabelFromScore(score) {
-      if (score >= 0.55) return "high activity";
-      if (score > 0) return "moderate activity";
-      if (score <= -0.55) return "deep sedentary";
-      if (score < 0) return "light sedentary";
-      return "balanced";
+      if (score >= 0.15) return "legendActive";
+      if (score <= -0.15) return "legendSedentary";
+      return "legendBalanced";
     }
 
     function classifyHour(hour) {
       const cls = classifyHourData(analytics, hour);
-      return { color: cls.domColor, label: cls.label };
+      return { color: cls.domColor, labelKey: cls.labelKey };
     }
 
     function classifyHourData(data, hour) {
@@ -810,10 +805,10 @@
       const standup = (data.hourly_standup && data.hourly_standup[hour]) || 0;
       const total = sedentary + standup;
       if (sedentary === 0 && standup === 0) {
-        return { domColor: "var(--sleep)", pngColor: "#e5e7eb", label: "sleep/idle" };
+        return { domColor: "var(--sleep)", pngColor: "#e5e7eb", labelKey: "legendSleep" };
       }
       if (total <= 0) {
-        return { domColor: "var(--sleep)", pngColor: "#e5e7eb", label: "sleep/idle" };
+        return { domColor: "var(--sleep)", pngColor: "#e5e7eb", labelKey: "legendSleep" };
       }
 
       // Balance score in [-1, 1]: -1 all sedentary, 0 balanced, +1 all standup.
@@ -830,7 +825,7 @@
       return {
         domColor: rgbToCss(rgb),
         pngColor: rgbToHex(rgb),
-        label: classifyLabelFromScore(score),
+        labelKey: classifyLabelFromScore(score),
       };
     }
 
@@ -842,7 +837,8 @@
         const el = document.createElement("div");
         el.className = "cell";
         el.style.background = cls.color;
-        el.title = `${String(h).padStart(2, "0")}:00 - ${cls.label} | standup:${analytics.hourly_standup[h] || 0}, sedentary:${analytics.hourly_sedentary[h] || 0}`;
+        const label = tr(cls.labelKey || "legendSleep");
+        el.title = `${String(h).padStart(2, "0")}:00 - ${label} | standup:${analytics.hourly_standup[h] || 0}, sedentary:${analytics.hourly_sedentary[h] || 0}`;
         const t = document.createElement("span");
         t.textContent = String(h).padStart(2, "0");
         el.appendChild(t);
