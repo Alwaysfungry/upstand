@@ -17,17 +17,13 @@ sys-locale = "0.3"
 rand = "0.8"
 windows-sys = { version = "0.52", features = ["Win32_UI_Input_KeyboardAndMouse", "Win32_System_SystemInformation", "Win32_Foundation", "Win32_Globalization"] }
 
-# Image generation for heatmap export
-# image dependency removed â€?no analytics/heatmap exports in minimal build
-
 [target.'cfg(windows)'.dependencies]
 windows-sys = { version = "0.52", features = [
     "Win32_Foundation",
-    "Win32_UI_Input_KeyboardAndMouse", 
+    "Win32_UI_Input_KeyboardAndMouse",
     "Win32_System_SystemInformation",
     "Win32_Globalization"
 ] }
 
 [build-dependencies]
 tauri-build = "2.0"
-
