@@ -3959,7 +3959,7 @@ checksum = "f6ccf251212114b54433ec949fd6a7841275f9ada20dddd2f29e9ceea4501493"
 
 [[package]]
 name = "upstand"
-version = "1.2.0"
+version = "1.2.2"
 dependencies = [
  "base64 0.22.1",
  "chrono",
