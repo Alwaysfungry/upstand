@@ -21,6 +21,8 @@ const MIN_EXPORT_RECORDS: u32 = 5;
 const REMINDER_WIDTH: i32 = 640;
 const REMINDER_HEIGHT: i32 = 196;
 const REMINDER_PROMPT_COUNT: usize = 15;
+const DEFAULT_INTERVAL_MINUTES: u64 = 50;
+const ALLOWED_INTERVAL_MINUTES: [u64; 5] = [5, 10, 20, 30, 50];
 const TRAY_ID: &str = "main_tray";
 const REMINDER_TIPS_EN: [&str; REMINDER_PROMPT_COUNT] = [
     "Smelly butt, smelly butt, please stand up!",
@@ -67,6 +69,14 @@ fn default_reminder_language() -> String {
 
 fn default_theme() -> String {
     "night".to_string()
+}
+
+fn sanitize_interval_minutes(value: u64) -> u64 {
+    if ALLOWED_INTERVAL_MINUTES.contains(&value) {
+        value
+    } else {
+        DEFAULT_INTERVAL_MINUTES
+    }
 }
 
 #[derive(Serialize, Deserialize)]
@@ -205,7 +215,7 @@ fn read_config(handle: &AppHandle) -> AppConfigFile {
         }
     }
     AppConfigFile {
-        interval_minutes: 50,
+        interval_minutes: DEFAULT_INTERVAL_MINUTES,
         language: default_language(),
         reminder_language: default_reminder_language(),
         theme: default_theme(),
@@ -237,18 +247,36 @@ fn save_config(
 
 fn load_config(handle: &AppHandle, state: &AppState) {
     let cfg = read_config(handle);
-    *state.interval.lock().unwrap() = cfg.interval_minutes * 60;
-    *state.language.lock().unwrap() = cfg.language;
-    *state.reminder_language.lock().unwrap() = if cfg.reminder_language == "zh-CN" {
+    let normalized_minutes = sanitize_interval_minutes(cfg.interval_minutes);
+    let normalized_language = if cfg.language == "zh-CN" {
         "zh-CN".to_string()
     } else {
         "en".to_string()
     };
-    *state.theme.lock().unwrap() = if cfg.theme == "day" {
+    let normalized_reminder_language = if cfg.reminder_language == "zh-CN" {
+        "zh-CN".to_string()
+    } else {
+        "en".to_string()
+    };
+    let normalized_theme = if cfg.theme == "day" {
         "day".to_string()
     } else {
         "night".to_string()
     };
+
+    *state.interval.lock().unwrap() = normalized_minutes * 60;
+    *state.language.lock().unwrap() = normalized_language.clone();
+    *state.reminder_language.lock().unwrap() = normalized_reminder_language.clone();
+    *state.theme.lock().unwrap() = normalized_theme.clone();
+
+    // Persist normalized/migrated config into the current app data path.
+    save_config(
+        handle,
+        normalized_minutes,
+        &normalized_language,
+        &normalized_reminder_language,
+        &normalized_theme,
+    );
 }
 
 fn tray_label(lang: &str, en: &str, zh: &str) -> String {
@@ -380,8 +408,9 @@ fn build_analytics(state: &AppState) -> AnalyticsData {
 
 #[tauri::command]
 fn set_reminder_interval(app: AppHandle, minutes: u64, state: State<'_, AppState>) -> String {
+    let normalized_minutes = sanitize_interval_minutes(minutes);
     let mut interval = state.interval.lock().unwrap();
-    *interval = minutes * 60;
+    *interval = normalized_minutes * 60;
 
     let mut elapsed = state.elapsed.lock().unwrap();
     *elapsed = 0;
@@ -392,8 +421,14 @@ fn set_reminder_interval(app: AppHandle, minutes: u64, state: State<'_, AppState
     let language = state.language.lock().unwrap().clone();
     let reminder_language = state.reminder_language.lock().unwrap().clone();
     let theme = state.theme.lock().unwrap().clone();
-    save_config(&app, minutes, &language, &reminder_language, &theme);
-    format!("Interval set to {} minutes", minutes)
+    save_config(
+        &app,
+        normalized_minutes,
+        &language,
+        &reminder_language,
+        &theme,
+    );
+    format!("Interval set to {} minutes", normalized_minutes)
 }
 
 #[tauri::command]
@@ -867,8 +902,11 @@ fn show_or_create_settings_window(app: &AppHandle) {
 
 fn main() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
+            show_or_create_settings_window(app);
+        }))
         .manage(AppState {
-            interval: Mutex::new(50 * 60),
+            interval: Mutex::new(DEFAULT_INTERVAL_MINUTES * 60),
             elapsed: Mutex::new(0),
             last_interval_change: Mutex::new(Instant::now()),
             reminder_events: Mutex::new(Vec::new()),
@@ -881,7 +919,7 @@ fn main() {
             active_reminder_id: Mutex::new(0),
             active_reminder_start_ts: Mutex::new(None),
             active_reminder_shown_at: Mutex::new(None),
-            active_reminder_interval_secs: Mutex::new(50 * 60),
+            active_reminder_interval_secs: Mutex::new(DEFAULT_INTERVAL_MINUTES * 60),
             active_reminder_logged_sedentary: Mutex::new(false),
             active_reminder_tip: Mutex::new("Time to stand up and stretch.".to_string()),
         })

@@ -1,12 +1,13 @@
 [package]
 name = "upstand"
-version = "1.2.2"
+version = "1.2.3"
 edition = "2021"
 
 [dependencies]
 tauri = { version = "2.1", features = ["tray-icon", "image-png"] }
 tauri-plugin-shell = "2.0"
 tauri-plugin-autostart = "2.0"
+tauri-plugin-single-instance = "2.0"
 tokio = { version = "1", features = ["full"] }
 chrono = "0.4"
 serde = { version = "1.0", features = ["derive"] }
